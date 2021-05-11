@@ -3,9 +3,9 @@
 @using System.Net.Http
 @inject HttpClient Http
 
-<p>This component demonstrates fetching data from the server.</p>
-<button class="btn-success" @onclick="GetSeasons">Get Data</button>
-<h3>@content</h3>
+<p>This component demonstrates fetching data from the Ergast.com API.</p>
+
+
 @if (Seasons == null)
 {
     <h4>Loading...</h4>
@@ -25,7 +25,7 @@ else
         {
             <tr>
                 <td>@season.season</td>
-                <td>@season.url</td>
+                <td><a href="@season.url" target="_blank">Wiki</a></td>
             </tr>
         }
     </tbody>
@@ -41,7 +41,6 @@ else
     protected override async Task OnInitializedAsync()
     {
         fetchedData = await Http.GetFromJsonAsync<FetchedData>("api/f1/seasons.json");
-        content = await Http.GetStringAsync("api/f1/seasons.json");
         Seasons = fetchedData.MRData.SeasonTable.Seasons;
     }
 
@@ -50,7 +49,6 @@ else
         fetchedData = await Http.GetFromJsonAsync<FetchedData>("api/f1/seasons.json");
         Seasons = fetchedData.MRData.SeasonTable.Seasons;
     }
-
 
     public class FetchedData
     {
@@ -78,5 +76,4 @@ else
         public string season { get; set; }
         public string url { get; set; }
     }
-
 }
