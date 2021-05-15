@@ -1,53 +1,74 @@
 ﻿@page "/fetchdata"
 @using System.Text.Json.Serialization
 @using System.Net.Http
-@inject HttpClient Http
+@using BlazorErgast.Pages
+@inject IHttpClientFactory _clientFactory
 
-<p>This component demonstrates fetching data from the Ergast.com API.</p>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            @if (Seasons == null)
+            {
+                <h4>Loading...</h4>
+            }
+            else
+            {
+                <p>This component demonstrates fetching data from the Ergast.com API.</p>
+                <p>There are @fetchedData.MRData.Total total seasons in the DB.</p>
+                <p>What is shown here is restricted to a maximum of @fetchedData.MRData.Limit</p>
 
+                <table class="table col-sm">
+                    <thead>
+                        <tr>
+                            <th>Year of season</th>
+                            <th>Url</th>
+                            <th></th>
 
-@if (Seasons == null)
-{
-    <h4>Loading...</h4>
-}
-else
-{
-<table class="table">
-    <thead>
-        <tr>
-            <th>Year of season</th>
-            <th>Url</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var season in Seasons)
+                        {
+                            <tr>
+                                <td>@season.season</td>
+                                <td><a href="@season.url" target="_blank">Wiki</a></td>
+                                <td><button @onclick="() => GiveDriverYear(season.season)" class="btn-light">See Drivers</button></td>
+                               
+                            </tr>
+                        }
+                    </tbody>
+                </table>
 
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var season in Seasons)
-        {
-            <tr>
-                <td>@season.season</td>
-                <td><a href="@season.url" target="_blank">Wiki</a></td>
-            </tr>
-        }
-    </tbody>
-</table>
-}
-    
-
+            }
+        </div>
+        <div class="col">
+            <DriverList Year=@YearToPass></DriverList>
+            
+        </div>
+    </div>
+</div>
 
 @code {
+    DriverList drivercomponent;
     private FetchedData fetchedData;
     private Season[] Seasons;
-    private string content;
+    public string YearToPass = "2021";
     protected override async Task OnInitializedAsync()
     {
+        var Http = _clientFactory.CreateClient("ErgastClient");
         fetchedData = await Http.GetFromJsonAsync<FetchedData>("api/f1/seasons.json");
         Seasons = fetchedData.MRData.SeasonTable.Seasons;
     }
 
-    public async Task GetSeasons()
+    public void Show()
     {
-        fetchedData = await Http.GetFromJsonAsync<FetchedData>("api/f1/seasons.json");
-        Seasons = fetchedData.MRData.SeasonTable.Seasons;
+
+    }
+
+    public void GiveDriverYear(string year)
+    {
+        YearToPass = year;
+
     }
 
     public class FetchedData

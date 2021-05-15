@@ -1,0 +1,105 @@
+﻿@using System.ComponentModel
+@inject IHttpClientFactory _clientFactory
+
+<h3>Drivers who participated in the @Year season</h3>
+@if (drivers == null)
+{
+    <h4>Select a driver</h4>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Last Name</th>
+                <th>Nationality</th>
+                <th>Born</th>
+                <th>Info</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var driver in drivers)
+            {
+                <tr>
+                    <td>Driver Code: @driver.Code</td>
+                    <td>Name: @driver.GivenName</td>
+                    <td>Family Name: @driver.FamilyName</td>
+                    <td>Nationality: @driver.Nationality</td>
+                    <td>Born: @driver.DateOfBirth</td>
+                    @*<td>Id: @driver.DriverId</td>*@
+                    <td>More Info: <a href="@driver.Url">Wiki</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@code {
+    private string year;
+    [Parameter]
+    public string Year
+    {
+        get { return year; }
+
+        set { year = value; }
+    }
+
+    public Driver[] drivers;
+    private FetchedData fetchedData;
+    protected override async Task OnInitializedAsync()
+    {
+        var Http = _clientFactory.CreateClient("ErgastClient");
+        fetchedData = await Http.GetFromJsonAsync<FetchedData>($"api/f1/{Year}/drivers.json");
+        drivers = fetchedData.MRData.DriverTable.Drivers;
+    }
+
+    public void GetDrivers(string value)
+    {
+       await GetDriversAgianAsync(value);
+    }
+
+    
+    
+
+    public async Task GetDriversAgianAsync(string year)
+    {
+        var Http = _clientFactory.CreateClient("ErgastClient");
+        fetchedData = await Http.GetFromJsonAsync<FetchedData>($"api/f1/{year}/drivers.json");
+        drivers = fetchedData.MRData.DriverTable.Drivers;
+    }
+
+    public class FetchedData
+    {
+        public MrData MRData { get; set; }
+    }
+
+    public class MrData
+    {
+        public string Xmlns { get; set; }
+        public string Series { get; set; }
+        public string Url { get; set; }
+        public string Limit { get; set; }
+        public string Offset { get; set; }
+        public string Total { get; set; }
+        public DriverTable DriverTable { get; set; }
+    }
+
+    public class DriverTable
+    {
+        public string Season { get; set; }
+        public Driver[] Drivers { get; set; }
+    }
+
+    public class Driver
+    {
+        public string DriverId { get; set; }
+        public string Code { get; set; }
+        public string Url { get; set; }
+        public string GivenName { get; set; }
+        public string FamilyName { get; set; }
+        public DateTimeOffset DateOfBirth { get; set; }
+        public string  Nationality { get; set; }
+        public int PermanentNumber { get; set; }
+    }
+}
