@@ -32,8 +32,7 @@
                             <tr>
                                 <td>@season.season</td>
                                 <td><a href="@season.url" target="_blank">Wiki</a></td>
-                                <td><button @onclick="() => GiveDriverYear(season.season)" class="btn-light">See Drivers</button></td>
-                               
+                                <td><button @onclick="@(()=> Show(season.season))" class="btn-light">See Drivers</button></td>
                             </tr>
                         }
                     </tbody>
@@ -42,8 +41,13 @@
             }
         </div>
         <div class="col">
-            <DriverList Year=@YearToPass></DriverList>
-            
+            @if (drivercomponent != null)
+            {
+                <drivercomponent Year = @YearToPass ></drivercomponent>
+
+            }
+
+
         </div>
     </div>
 </div>
@@ -60,16 +64,19 @@
         Seasons = fetchedData.MRData.SeasonTable.Seasons;
     }
 
-    public void Show()
+    public void Show(string year)
     {
-
+        
+        drivercomponent = new DriverList(year);
+        
     }
 
-    public void GiveDriverYear(string year)
+    public async void GiveDriverYear(string year)
     {
         YearToPass = year;
-
+        await drivercomponent.GetDriversAgianAsync(year);
     }
+
 
     public class FetchedData
     {

@@ -1,10 +1,11 @@
-﻿@using System.ComponentModel
+﻿@page "/searchdriver"
 @inject IHttpClientFactory _clientFactory
 
-<h3>Drivers who participated in the @Year season</h3>
+<h3>Search for a Driver</h3>
+<p><input @onchange="@((ChangeEventArgs __e) => Name = __e.Value.ToString())" @*@oninput="OnPasswordChanged"*@/></p>
 @if (drivers == null)
 {
-    <h4>Select a driver</h4>
+    <h4>Search for a driver</h4>
 }
 else
 {
@@ -28,7 +29,6 @@ else
                     <td>@driver.FamilyName</td>
                     <td>@driver.Nationality</td>
                     <td>@driver.DateOfBirth</td>
-                    @*<td>Id: @driver.DriverId</td>*@
                     <td><a href="@driver.Url">Wiki</a></td>
                 </tr>
             }
@@ -36,41 +36,13 @@ else
     </table>
 }
 @code {
-    private string year;
-    [Parameter]
-    public string Year
-    {
-        get { return year; }
-
-        set { year = value; }
-    }
-
-    public DriverList(string year)
-    {
-        Year = year;
-
-    }
-
     public Driver[] drivers;
     private FetchedData fetchedData;
-    public HttpClient Http;
+    public string Name { get; set; }
     protected override async Task OnInitializedAsync()
     {
-        Http = _clientFactory.CreateClient("ErgastClient");
-        fetchedData = await Http.GetFromJsonAsync<FetchedData>($"api/f1/{Year}/drivers.json");
-        drivers = fetchedData.MRData.DriverTable.Drivers;
-    }
-
-    public async void SetYear(string year)
-    {
-        fetchedData = await Http.GetFromJsonAsync<FetchedData>($"api/f1/{year}/drivers.json");
-        drivers = fetchedData.MRData.DriverTable.Drivers;
-    }
-
-    public async Task GetDriversAgianAsync(string year)
-    {
-        Http = _clientFactory.CreateClient("ErgastClient");
-        fetchedData = await Http.GetFromJsonAsync<FetchedData>($"api/f1/{year}/drivers.json");
+        var Http = _clientFactory.CreateClient("ErgastClient");
+        fetchedData = await Http.GetFromJsonAsync<FetchedData>($"api/f1/drivers/{Name}.json");
         drivers = fetchedData.MRData.DriverTable.Drivers;
     }
 
@@ -104,7 +76,7 @@ else
         public string GivenName { get; set; }
         public string FamilyName { get; set; }
         public DateTimeOffset DateOfBirth { get; set; }
-        public string  Nationality { get; set; }
+        public string Nationality { get; set; }
         public int PermanentNumber { get; set; }
     }
 }

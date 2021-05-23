@@ -1,0 +1,13 @@
+﻿@page "/inputcomponent"
+<h3>InputComponent</h3>
+<p>
+    <code>InputValue</code>: @InputValue
+</p>
+
+<p>
+    <input @bind="InputValue" @bind:event="oninput"/>
+</p>
+
+@code {
+    private string InputValue { get; set; }
+}
