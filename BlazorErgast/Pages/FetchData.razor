@@ -7,6 +7,7 @@
 <div class="container">
     <div class="row">
         <div class="col">
+
             @if (Seasons == null)
             {
                 <h4>Loading...</h4>
@@ -19,22 +20,22 @@
 
                 <table class="table col-sm">
                     <thead>
-                        <tr>
-                            <th>Year of season</th>
-                            <th>Url</th>
-                            <th></th>
+                    <tr>
+                        <th>Year of season</th>
+                        <th>Url</th>
+                        <th></th>
 
-                        </tr>
+                    </tr>
                     </thead>
                     <tbody>
-                        @foreach (var season in Seasons)
-                        {
-                            <tr>
-                                <td>@season.season</td>
-                                <td><a href="@season.url" target="_blank">Wiki</a></td>
-                                <td><button @onclick="@(()=> Show(season.season))" class="btn-light">See Drivers</button></td>
-                            </tr>
-                        }
+                    @foreach (var season in Seasons)
+                    {
+                        <tr>
+                            <td>@season.season</td>
+                            <td><a href="@season.url" target="_blank">Wiki</a></td>
+                            <td><button @onclick="@(() => Show(season.season))" class="btn-succes">See Drivers</button></td>
+                        </tr>
+                    }
                     </tbody>
                 </table>
 
@@ -55,20 +56,29 @@
 @code {
     DriverList drivercomponent;
     private FetchedData fetchedData;
-    private Season[] Seasons;
+    private IEnumerable<Season> Seasons;
     public string YearToPass = "2021";
     protected override async Task OnInitializedAsync()
     {
         var Http = _clientFactory.CreateClient("ErgastClient");
-        fetchedData = await Http.GetFromJsonAsync<FetchedData>("api/f1/seasons.json");
-        Seasons = fetchedData.MRData.SeasonTable.Seasons;
+        fetchedData = await Http.GetFromJsonAsync<FetchedData>("api/f1/seasons.json?limit=100");
+        var jsondataarray = fetchedData.MRData.SeasonTable.Seasons;
+
+        List<Season> jsonseasons = new List<Season>();
+
+        foreach (Season season in jsondataarray)
+        {
+            jsonseasons.Add(season);
+        }
+
+        Seasons = jsonseasons.OrderByDescending(season => season.season);
     }
 
     public void Show(string year)
     {
-        
+
         drivercomponent = new DriverList(year);
-        
+
     }
 
     public async void GiveDriverYear(string year)

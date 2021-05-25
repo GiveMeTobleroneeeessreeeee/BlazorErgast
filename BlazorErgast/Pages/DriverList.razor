@@ -63,6 +63,7 @@ else
 
     public async void SetYear(string year)
     {
+
         fetchedData = await Http.GetFromJsonAsync<FetchedData>($"api/f1/{year}/drivers.json");
         drivers = fetchedData.MRData.DriverTable.Drivers;
     }

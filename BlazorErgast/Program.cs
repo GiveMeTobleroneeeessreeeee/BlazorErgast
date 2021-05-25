@@ -17,8 +17,6 @@ namespace BlazorErgast
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("#app");
 
-            //builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("http://ergast.com/") });
-
             builder.Services.AddHttpClient("ErgastClient", client =>
             {
                 client.BaseAddress = new Uri("http://ergast.com/");
