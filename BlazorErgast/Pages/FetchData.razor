@@ -58,6 +58,7 @@
     private FetchedData fetchedData;
     private IEnumerable<Season> Seasons;
     public string YearToPass = "2021";
+
     protected override async Task OnInitializedAsync()
     {
         var Http = _clientFactory.CreateClient("ErgastClient");

@@ -1,13 +1,51 @@
 ﻿@page "/inputcomponent"
 <h3>InputComponent</h3>
+
 <p>
+    @*Example #1*@
+    <h6>Example #1</h6>
     <code>InputValue</code>: @InputValue
+    <br />
+    <input @bind="InputValue" @bind:event="oninput" />
 </p>
 
 <p>
-    <input @bind="InputValue" @bind:event="oninput"/>
+    @*Example #2*@
+    <h6>Example #2</h6>
+    <input @bind="inputV" />
+    <br />
+    <code>inputValue</code>: @inputV
+</p>
+
+<p>
+    @*Example #3*@
+    <h6>Example #3</h6>
+    <label>
+        <code>yyyy-MM-dd</code> format: @startDate
+        <br />
+        <input @bind="startDate" @bind:format="yyyy-MM-dd" />
+    </label>
+</p>
+
+<p>
+    <label>
+        <input @bind="startDate" @bind:format="dd-MM-yyyy"/>
+    </label>
 </p>
 
 @code {
+
+    //Example #1
+
     private string InputValue { get; set; }
+
+    //Example #2
+
+    private int inputV = 123;
+
+    //Example #3
+
+    private DateTime startDate = new(2020, 1, 1);
+
+
 }

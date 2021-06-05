@@ -2,7 +2,8 @@
 @inject IHttpClientFactory _clientFactory
 
 <h3>Search for a Driver</h3>
-<p><input @onchange="@((ChangeEventArgs __e) => Name = __e.Value.ToString())" @*@oninput="OnPasswordChanged"*@/></p>
+<input @bind="Name" type="text" @oninput="@(( args ) =>Name = args.Value.ToString())"/>
+<input type="text" value="@Name" @oninput="@Search" />
 @if (drivers == null)
 {
     <h4>Search for a driver</h4>
@@ -21,7 +22,7 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var driver in drivers)
+            @foreach (var driver in FilteredDrivers)
             {
                 <tr>
                     <td>@driver.Code</td>
@@ -36,14 +37,39 @@ else
     </table>
 }
 @code {
+    private string SearchValue { get; set; }
+
+    public IEnumerable<Driver> sortedDrivers = new List<Driver>();
+    public List<Driver> unsortedDrivers = new List<Driver>();
     public Driver[] drivers;
     private FetchedData fetchedData;
-    public string Name { get; set; }
+    public string Name { get; set; } = "";
+    public List<Driver> driverlist = new List<Driver>();
+
+    List<Driver> FilteredDrivers => unsortedDrivers.Where(i => i.GivenName.ToLower().Contains(Name.ToLower())).ToList();
+
     protected override async Task OnInitializedAsync()
     {
+        drivers = null;
         var Http = _clientFactory.CreateClient("ErgastClient");
-        fetchedData = await Http.GetFromJsonAsync<FetchedData>($"api/f1/drivers/{Name}.json");
+        fetchedData = await Http.GetFromJsonAsync<FetchedData>($"api/f1/drivers.json?limit=1000");
         drivers = fetchedData.MRData.DriverTable.Drivers;
+
+        driverlist = null;
+        unsortedDrivers = null;
+
+        foreach (Driver driver in drivers)
+        {
+            driverlist.Add(driver);
+            unsortedDrivers.Add(driver);
+        }
+    }
+
+    public void Search(ChangeEventArgs args)
+    {
+        //sortedDrivers = driverlist.OrderByDescending(driver => driver.GivenName);
+        sortedDrivers = driverlist.Where(i => i.GivenName.Contains(args.Value.ToString()));
+
     }
 
     public class FetchedData
