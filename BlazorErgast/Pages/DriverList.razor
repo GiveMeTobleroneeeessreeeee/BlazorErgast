@@ -1,5 +1,6 @@
 ﻿@using System.ComponentModel
 @inject IHttpClientFactory _clientFactory
+@inject StateContainer StateContainer
 
 <h3>Drivers who participated in the @Year season</h3>
 @if (drivers == null)

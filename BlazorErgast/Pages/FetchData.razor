@@ -3,6 +3,7 @@
 @using System.Net.Http
 @using BlazorErgast.Pages
 @inject IHttpClientFactory _clientFactory
+@inject StateContainer StateContainer
 
 <div class="container">
     <div class="row">
@@ -20,22 +21,22 @@
 
                 <table class="table col-sm">
                     <thead>
-                    <tr>
-                        <th>Year of season</th>
-                        <th>Url</th>
-                        <th></th>
+                        <tr>
+                            <th>Year of season</th>
+                            <th>Url</th>
+                            <th></th>
 
-                    </tr>
+                        </tr>
                     </thead>
                     <tbody>
-                    @foreach (var season in Seasons)
-                    {
-                        <tr>
-                            <td>@season.season</td>
-                            <td><a href="@season.url" target="_blank">Wiki</a></td>
-                            <td><button @onclick="@(() => Show(season.season))" class="btn-succes">See Drivers</button></td>
-                        </tr>
-                    }
+                        @foreach (var season in Seasons)
+                        {
+                            <tr>
+                                <td>@season.season</td>
+                                <td><a href="@season.url" target="_blank">Wiki</a></td>
+                                <td><button @onclick="@(() => Show(season.season))" class="btn-succes">See Drivers</button></td>
+                            </tr>
+                        }
                     </tbody>
                 </table>
 
@@ -44,7 +45,7 @@
         <div class="col">
             @if (drivercomponent != null)
             {
-                <drivercomponent Year = @YearToPass ></drivercomponent>
+                <drivercomponent Year=@YearToPass></drivercomponent>
 
             }
 

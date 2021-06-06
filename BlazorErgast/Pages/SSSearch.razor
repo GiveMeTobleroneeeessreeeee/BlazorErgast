@@ -1,0 +1,67 @@
+﻿@page "/sssearch"
+@inject IHttpClientFactory _clientFactory
+
+<h3>SSSearch</h3>
+
+<input @bind-value="searchTerm" @bind-value:event="oninput" />
+@if (Drivers != null)
+{
+    <span class="text-muted ml-5">
+        Showing @FilteredDrivers.Count out of @Drivers.Count
+    </span>
+    <ul>
+        @foreach (var Driver in FilteredDrivers)
+        {
+            <li>@Driver.GivenName</li>
+        }
+    </ul>
+}
+
+
+
+@code {
+    string searchTerm { get; set; } = "";
+    private FetchedData fetchedData;
+    public List<Driver> Drivers;
+    List<Driver> FilteredDrivers => Drivers.Where(i => i.GivenName.ToLower().Contains(searchTerm.ToLower())).ToList();
+    protected override async Task OnInitializedAsync()
+    {
+        var Http = _clientFactory.CreateClient("ErgastClient");
+        fetchedData = await Http.GetFromJsonAsync<FetchedData>($"api/f1/drivers.json?limit=1000");
+        Drivers = fetchedData.MRData.DriverTable.Drivers.ToList();
+    }
+
+    public class FetchedData
+    {
+        public MrData MRData { get; set; }
+    }
+
+    public class MrData
+    {
+        public string Xmlns { get; set; }
+        public string Series { get; set; }
+        public string Url { get; set; }
+        public string Limit { get; set; }
+        public string Offset { get; set; }
+        public string Total { get; set; }
+        public DriverTable DriverTable { get; set; }
+    }
+
+    public class DriverTable
+    {
+        public string Season { get; set; }
+        public Driver[] Drivers { get; set; }
+    }
+
+    public class Driver
+    {
+        public string DriverId { get; set; }
+        public string Code { get; set; }
+        public string Url { get; set; }
+        public string GivenName { get; set; }
+        public string FamilyName { get; set; }
+        public DateTimeOffset DateOfBirth { get; set; }
+        public string Nationality { get; set; }
+        public int PermanentNumber { get; set; }
+    }
+}

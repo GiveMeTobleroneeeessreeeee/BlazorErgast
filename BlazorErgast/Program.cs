@@ -27,6 +27,8 @@ namespace BlazorErgast
                 client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
             });
 
+            builder.Services.AddSingleton<StateContainer>();
+
             await builder.Build().RunAsync();
         }
     }
