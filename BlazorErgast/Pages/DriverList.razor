@@ -58,7 +58,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         Http = _clientFactory.CreateClient("ErgastClient");
-        fetchedData = await Http.GetFromJsonAsync<FetchedData>($"api/f1/{Year}/drivers.json");
+        fetchedData = await Http.GetFromJsonAsync<FetchedData>($"api/f1/{StateContainer.Property}/drivers.json");
         drivers = fetchedData.MRData.DriverTable.Drivers;
     }
 
