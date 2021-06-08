@@ -9,6 +9,7 @@
 }
 else
 {
+    @*<h4>Showing drivers of the @StateContainer.Property season</h4>*@
     <table class="table">
         <thead>
             <tr>
@@ -38,6 +39,7 @@ else
 }
 @code {
     private string year;
+
     [Parameter]
     public string Year
     {
@@ -46,35 +48,58 @@ else
         set { year = value; }
     }
 
-    public DriverList(string year)
-    {
-        Year = year;
+    
+    //public DriverList(string year)
+    //{
+    //    Year = year;
+    //}
 
-    }
-
-    public Driver[] drivers;
+    public List<Driver> drivers;
     private FetchedData fetchedData;
     public HttpClient Http;
+
     protected override async Task OnInitializedAsync()
     {
+        ////State
+        //StateContainer.OnChange += StateHasChanged;
+        //StateContainer.Property = "2021";
+        //year = StateContainer.Property;
+        
         Http = _clientFactory.CreateClient("ErgastClient");
-        fetchedData = await Http.GetFromJsonAsync<FetchedData>($"api/f1/{StateContainer.Property}/drivers.json");
-        drivers = fetchedData.MRData.DriverTable.Drivers;
+        fetchedData = await Http.GetFromJsonAsync<FetchedData>($"api/f1/{Year}/drivers.json");
+        drivers = fetchedData.MRData.DriverTable.Drivers.ToList();
+        
     }
 
-    public async void SetYear(string year)
+    public void SetYear(string year)
     {
+        if (year == Year)
+        {
 
-        fetchedData = await Http.GetFromJsonAsync<FetchedData>($"api/f1/{year}/drivers.json");
-        drivers = fetchedData.MRData.DriverTable.Drivers;
+        }
+        else
+        {
+            //fetchedData = await Http.GetFromJsonAsync<FetchedData>($"api/f1/{year}/drivers.json");
+            //drivers = fetchedData.MRData.DriverTable.Drivers;
+            Year = year;
+            StateHasChanged();
+        }
+
     }
 
     public async Task GetDriversAgianAsync(string year)
     {
         Http = _clientFactory.CreateClient("ErgastClient");
         fetchedData = await Http.GetFromJsonAsync<FetchedData>($"api/f1/{year}/drivers.json");
-        drivers = fetchedData.MRData.DriverTable.Drivers;
+        drivers = fetchedData.MRData.DriverTable.Drivers.ToList();
     }
+
+    //State
+    //public void Dispose()
+    //{
+    //    StateContainer.OnChange -= StateHasChanged;
+    //}
+
 
     public class FetchedData
     {

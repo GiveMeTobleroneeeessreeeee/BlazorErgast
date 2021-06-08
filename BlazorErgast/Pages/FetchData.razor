@@ -8,7 +8,6 @@
 <div class="container">
     <div class="row">
         <div class="col">
-
             @if (Seasons == null)
             {
                 <h4>Loading...</h4>
@@ -25,7 +24,6 @@
                             <th>Year of season</th>
                             <th>Url</th>
                             <th></th>
-
                         </tr>
                     </thead>
                     <tbody>
@@ -34,7 +32,7 @@
                             <tr>
                                 <td>@season.season</td>
                                 <td><a href="@season.url" target="_blank">Wiki</a></td>
-                                <td><button @onclick="@(() => Show(season.season))" class="btn-succes">See Drivers</button></td>
+                                <td><button @onclick="@(() => GiveDriverYear(season.season))" class="btn-succes">See Drivers</button></td>
                             </tr>
                         }
                     </tbody>
@@ -45,51 +43,68 @@
         <div class="col">
             @if (drivercomponent != null)
             {
-                <drivercomponent Year=@YearToPass></drivercomponent>
-
+                <DriverList @ref="drivercomponent" Year="@YearToPass"></DriverList>
             }
-
-
         </div>
     </div>
 </div>
 
 @code {
-    DriverList drivercomponent;
+    private DriverList drivercomponent;
+
     private FetchedData fetchedData;
-    private IEnumerable<Season> Seasons;
-    public string YearToPass = "2021";
+
+    private List<Season> Seasons;
+
+    private string _yearToPass;
+
+    public string YearToPass
+    {
+        get => _yearToPass;
+        set
+        {
+            _yearToPass = value;
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
+        YearToPass = "2021";
+        //State
+        //StateContainer.OnChange += StateHasChanged;
+        drivercomponent = new DriverList();
         var Http = _clientFactory.CreateClient("ErgastClient");
         fetchedData = await Http.GetFromJsonAsync<FetchedData>("api/f1/seasons.json?limit=100");
-        var jsondataarray = fetchedData.MRData.SeasonTable.Seasons;
+        Seasons = fetchedData.MRData.SeasonTable.Seasons.ToList();
 
-        List<Season> jsonseasons = new List<Season>();
+        //List<Season> jsonseasons = new List<Season>();
 
-        foreach (Season season in jsondataarray)
-        {
-            jsonseasons.Add(season);
-        }
+        //foreach (Season season in jsondataarray)
+        //{
+        //    jsonseasons.Add(season);
+        //}
 
-        Seasons = jsonseasons.OrderByDescending(season => season.season);
+        //Seasons = jsonseasons.OrderByDescending(season => season.season);
     }
 
-    public void Show(string year)
+    public void NewYear(string newyear)
     {
-        StateContainer.Property = year;
-
-    //drivercomponent = new DriverList(year);
-
+        YearToPass = newyear;
     }
+
+    //public void ChangePropertyValue(string year)
+    //{
+    //    StateContainer.Property = year;
+    //    StateContainer.OnChange += StateHasChanged;
+
+    //    //drivercomponent = new DriverList(year);
+    //}
 
     public async void GiveDriverYear(string year)
     {
         YearToPass = year;
         await drivercomponent.GetDriversAgianAsync(year);
     }
-
 
     public class FetchedData
     {
