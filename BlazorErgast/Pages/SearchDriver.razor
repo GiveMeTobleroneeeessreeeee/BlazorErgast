@@ -1,7 +1,8 @@
 ﻿@page "/searchdriver"
 @inject IHttpClientFactory _clientFactory
+@inject StateContainer stateContainer
 
-<h3>Search Driver</h3>
+<h3>Hello @stateContainer.Property, welcome to the Searchdriver component!</h3>
 
 <input @bind-value="searchTerm" @bind-value:event="oninput" />
 @if (Drivers != null)
@@ -16,8 +17,6 @@
         }
     </ul>
 }
-
-
 
 @code {
     string searchTerm { get; set; } = "";

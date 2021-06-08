@@ -3,7 +3,9 @@
 @using System.Net.Http
 @using BlazorErgast.Pages
 @inject IHttpClientFactory _clientFactory
-@inject StateContainer StateContainer
+@inject StateContainer stateContainer
+
+<h3>Hello @stateContainer.Property, welcome to the FetchData component!</h3>
 
 <div class="container">
     <div class="row">
@@ -20,21 +22,21 @@
 
                 <table class="table col-sm">
                     <thead>
-                        <tr>
-                            <th>Year of season</th>
-                            <th>Url</th>
-                            <th></th>
-                        </tr>
+                    <tr>
+                        <th>Year of season</th>
+                        <th>Url</th>
+                        <th></th>
+                    </tr>
                     </thead>
                     <tbody>
-                        @foreach (var season in Seasons)
-                        {
-                            <tr>
-                                <td>@season.season</td>
-                                <td><a href="@season.url" target="_blank">Wiki</a></td>
-                                <td><button @onclick="@(() => GiveDriverYear(season.season))" class="btn-succes">See Drivers</button></td>
-                            </tr>
-                        }
+                    @foreach (var season in Seasons)
+                    {
+                        <tr>
+                            <td>@season.season</td>
+                            <td><a href="@season.url" target="_blank">Wiki</a></td>
+                            <td><button @onclick="@(() => GiveDriverYear(season.season))" class="btn-succes">See Drivers</button></td>
+                        </tr>
+                    }
                     </tbody>
                 </table>
 
@@ -70,12 +72,12 @@
     protected override async Task OnInitializedAsync()
     {
         YearToPass = "2021";
-        
+
         drivercomponent = new DriverList();
         var Http = _clientFactory.CreateClient("ErgastClient");
         fetchedData = await Http.GetFromJsonAsync<FetchedData>("api/f1/seasons.json?limit=100");
-        Seasons = fetchedData.MRData.SeasonTable.Seasons.ToList();
-        Seasons.OrderByDescending(season => season.season);
+        Seasons = fetchedData.MRData.SeasonTable.Seasons.OrderByDescending(season => season.season).ToList();
+        //Seasons.OrderBy(season => season.season);
     }
 
     public void NewYear(string newyear)

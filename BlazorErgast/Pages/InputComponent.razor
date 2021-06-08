@@ -1,5 +1,7 @@
 ﻿@page "/inputcomponent"
-<h3>InputComponent</h3>
+@inject StateContainer stateContainer
+
+<h3>Hello @stateContainer.Property, welcome to the InputComponent!</h3>
 
 <p>
     @*Example #1*@
@@ -29,7 +31,7 @@
 
 <p>
     <label>
-        <input @bind="startDate" @bind:format="dd-MM-yyyy"/>
+        <input @bind="startDate" @bind:format="dd-MM-yyyy" />
     </label>
 </p>
 

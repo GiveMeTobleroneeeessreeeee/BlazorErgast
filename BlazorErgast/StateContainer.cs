@@ -7,7 +7,7 @@ namespace BlazorErgast
 {
     public class StateContainer
     {
-        private string savedString = "2021";
+        private string savedString;
 
         public string Property
         {

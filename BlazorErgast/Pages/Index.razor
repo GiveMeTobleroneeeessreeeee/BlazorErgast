@@ -1,10 +1,13 @@
 ﻿@page "/"
+@inject StateContainer stateContainer
 @using System.Runtime.CompilerServices
 @using System.Security.Cryptography.X509Certificates
 
-<h1>Hello, world!</h1>
+<h1>Hello, world! & @stateContainer.Property</h1>
 
-Welcome to your new app.
+Welcome to your new app, please write your name below!
+
+<StateComponent></StateComponent>
 
 <SurveyPrompt Title="How is Blazor working for you?" />
 
