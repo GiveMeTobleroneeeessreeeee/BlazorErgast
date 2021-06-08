@@ -48,27 +48,16 @@ else
         set { year = value; }
     }
 
-    
-    //public DriverList(string year)
-    //{
-    //    Year = year;
-    //}
-
     public List<Driver> drivers;
     private FetchedData fetchedData;
     public HttpClient Http;
 
     protected override async Task OnInitializedAsync()
     {
-        ////State
-        //StateContainer.OnChange += StateHasChanged;
-        //StateContainer.Property = "2021";
-        //year = StateContainer.Property;
-        
         Http = _clientFactory.CreateClient("ErgastClient");
         fetchedData = await Http.GetFromJsonAsync<FetchedData>($"api/f1/{Year}/drivers.json");
         drivers = fetchedData.MRData.DriverTable.Drivers.ToList();
-        
+
     }
 
     public void SetYear(string year)
@@ -79,10 +68,8 @@ else
         }
         else
         {
-            //fetchedData = await Http.GetFromJsonAsync<FetchedData>($"api/f1/{year}/drivers.json");
-            //drivers = fetchedData.MRData.DriverTable.Drivers;
             Year = year;
-            StateHasChanged();
+            //StateHasChanged();
         }
 
     }
@@ -93,13 +80,6 @@ else
         fetchedData = await Http.GetFromJsonAsync<FetchedData>($"api/f1/{year}/drivers.json");
         drivers = fetchedData.MRData.DriverTable.Drivers.ToList();
     }
-
-    //State
-    //public void Dispose()
-    //{
-    //    StateContainer.OnChange -= StateHasChanged;
-    //}
-
 
     public class FetchedData
     {

@@ -1,0 +1,27 @@
+﻿@page "/state-container"
+@implements IDisposable
+@inject StateContainer stateContainer
+
+<h3>StateComponent</h3>
+
+<p>State container component property @stateContainer.Property</p>
+
+<input @bind-value="stateContainer.Property" @bind-value:event="oninput"/>
+@code {
+
+    protected override void OnInitialized()
+    {
+        stateContainer.OnChange += StateHasChanged;
+    }
+
+    public void ChangePropertyValue(string name)
+    {
+        stateContainer.Property = name;
+    }
+
+    public void Dispose()
+    {
+        stateContainer.OnChange -= StateHasChanged;
+    }
+
+}

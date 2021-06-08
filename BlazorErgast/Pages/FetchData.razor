@@ -70,35 +70,18 @@
     protected override async Task OnInitializedAsync()
     {
         YearToPass = "2021";
-        //State
-        //StateContainer.OnChange += StateHasChanged;
+        
         drivercomponent = new DriverList();
         var Http = _clientFactory.CreateClient("ErgastClient");
         fetchedData = await Http.GetFromJsonAsync<FetchedData>("api/f1/seasons.json?limit=100");
         Seasons = fetchedData.MRData.SeasonTable.Seasons.ToList();
-
-        //List<Season> jsonseasons = new List<Season>();
-
-        //foreach (Season season in jsondataarray)
-        //{
-        //    jsonseasons.Add(season);
-        //}
-
-        //Seasons = jsonseasons.OrderByDescending(season => season.season);
+        Seasons.OrderByDescending(season => season.season);
     }
 
     public void NewYear(string newyear)
     {
         YearToPass = newyear;
     }
-
-    //public void ChangePropertyValue(string year)
-    //{
-    //    StateContainer.Property = year;
-    //    StateContainer.OnChange += StateHasChanged;
-
-    //    //drivercomponent = new DriverList(year);
-    //}
 
     public async void GiveDriverYear(string year)
     {

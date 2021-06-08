@@ -1,75 +1,34 @@
 ﻿@page "/searchdriver"
 @inject IHttpClientFactory _clientFactory
 
-<h3>Search for a Driver</h3>
-<input @bind="Name" type="text" @oninput="@(( args ) =>Name = args.Value.ToString())"/>
-<input type="text" value="@Name" @oninput="@Search" />
-@if (drivers == null)
+<h3>Search Driver</h3>
+
+<input @bind-value="searchTerm" @bind-value:event="oninput" />
+@if (Drivers != null)
 {
-    <h4>Search for a driver</h4>
+    <span class="text-muted ml-5">
+        Showing @FilteredDrivers.Count out of @Drivers.Count
+    </span>
+    <ul>
+        @foreach (var Driver in FilteredDrivers)
+        {
+            <li>@Driver.GivenName</li>
+        }
+    </ul>
 }
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Code</th>
-                <th>Name</th>
-                <th>Last Name</th>
-                <th>Nationality</th>
-                <th>Born</th>
-                <th>Info</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var driver in FilteredDrivers)
-            {
-                <tr>
-                    <td>@driver.Code</td>
-                    <td>@driver.GivenName</td>
-                    <td>@driver.FamilyName</td>
-                    <td>@driver.Nationality</td>
-                    <td>@driver.DateOfBirth</td>
-                    <td><a href="@driver.Url">Wiki</a></td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+
+
+
 @code {
-    private string SearchValue { get; set; }
-
-    public IEnumerable<Driver> sortedDrivers = new List<Driver>();
-    public List<Driver> unsortedDrivers = new List<Driver>();
-    public Driver[] drivers;
+    string searchTerm { get; set; } = "";
     private FetchedData fetchedData;
-    public string Name { get; set; } = "";
-    public List<Driver> driverlist = new List<Driver>();
-
-    List<Driver> FilteredDrivers => unsortedDrivers.Where(i => i.GivenName.ToLower().Contains(Name.ToLower())).ToList();
-
+    public List<Driver> Drivers;
+    List<Driver> FilteredDrivers => Drivers.Where(i => i.GivenName.ToLower().Contains(searchTerm.ToLower())).ToList();
     protected override async Task OnInitializedAsync()
     {
-        drivers = null;
         var Http = _clientFactory.CreateClient("ErgastClient");
         fetchedData = await Http.GetFromJsonAsync<FetchedData>($"api/f1/drivers.json?limit=1000");
-        drivers = fetchedData.MRData.DriverTable.Drivers;
-
-        driverlist = null;
-        unsortedDrivers = null;
-
-        foreach (Driver driver in drivers)
-        {
-            driverlist.Add(driver);
-            unsortedDrivers.Add(driver);
-        }
-    }
-
-    public void Search(ChangeEventArgs args)
-    {
-        //sortedDrivers = driverlist.OrderByDescending(driver => driver.GivenName);
-        sortedDrivers = driverlist.Where(i => i.GivenName.Contains(args.Value.ToString()));
-
+        Drivers = fetchedData.MRData.DriverTable.Drivers.ToList();
     }
 
     public class FetchedData
