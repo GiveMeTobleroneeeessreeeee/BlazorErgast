@@ -13,7 +13,8 @@
     <ul>
         @foreach (var Driver in FilteredDrivers)
         {
-            <li>@Driver.GivenName</li>
+            <li>@Driver.GivenName @Driver.FamilyName, @Driver.Nationality, <a href="@Driver.Url">Wiki</a></li>
+
         }
     </ul>
 }
